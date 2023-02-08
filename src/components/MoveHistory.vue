@@ -1,0 +1,24 @@
+<script setup>
+import { defineProps, computed } from "vue";
+const props = defineProps({
+  moveHistoryList: Array,
+});
+const computedMoveList = computed(() => {
+  return props.moveHistoryList.map((move, i) =>
+    i % 2 === 0 ? move : { ...move, turn: null }
+  );
+});
+</script>
+<template>
+  <div>
+    <span v-for="move in computedMoveList">
+      <span v-if="move.turn !== null" class="turn">{{ move.turn }}. </span>
+      {{ move.moveName }}
+    </span>
+  </div>
+</template>
+<style scoped>
+.turn {
+  margin-left: 5px;
+}
+</style>
