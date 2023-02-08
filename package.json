@@ -17,6 +17,7 @@
     "@vue/eslint-config-prettier": "^7.0.0",
     "eslint": "^8.22.0",
     "eslint-plugin-vue": "^9.3.0",
+    "pinia": "^2.0.30",
     "prettier": "^2.7.1",
     "vite": "^4.0.0"
   }

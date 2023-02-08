@@ -1,10 +1,12 @@
 <script setup>
-import { defineProps, computed } from "vue";
-const props = defineProps({
-  moveHistoryList: Array,
-});
+import { computed } from "vue";
+
+import { useBoardStore } from "../store/board.js";
+
+const board = useBoardStore();
+
 const computedMoveList = computed(() => {
-  return props.moveHistoryList.map((move, i) =>
+  return board.moveHistoryList.map((move, i) =>
     i % 2 === 0 ? move : { ...move, turn: null }
   );
 });

@@ -4,38 +4,26 @@ import BoardCell from "./BoardCell.vue";
 import MoveHistory from "./MoveHistory.vue";
 import ResetButton from "./ResetButton.vue";
 
+import { useCurrentPlayerStore } from "../store/currentPlayer.js";
+import { useBoardStore } from "../store/board.js";
+
 import {
   columnList,
   rowList,
-  initialPiecePosition,
-  emptyBoard,
-  updateBoardMatrix,
   CELL_CONTENT,
   isChessPiece,
   cleanMoveAction,
-  buildMoveName,
 } from "../helper.js";
 import { buildAvailablePieceActionList } from "../previewMove.js";
 
-const boardMatrix = ref(emptyBoard);
-const currentPlayer = ref(1);
-const moveHistoryList = ref([]);
-let turn = 1;
+const board = useBoardStore();
+const currentPlayer = useCurrentPlayerStore();
 
 let lastClickedCell = null;
 
 const resetBoard = () => {
-  // INFO - CH - 20230207 - We cannot do boardMatrix.value = initialPiecePosition
-  // because it set a reference to initialPiecePosition and will update it when
-  // updating boardMatrix
-  for (const column of columnList) {
-    boardMatrix.value[column] = {};
-    for (const row of rowList) {
-      boardMatrix.value[column][row] = initialPiecePosition[column][row];
-    }
-  }
-  currentPlayer.value = 1;
-  moveHistoryList.value = [];
+  board.resetBoard();
+  currentPlayer.resetPlayer();
 };
 resetBoard();
 
@@ -44,26 +32,18 @@ const userAction = (column, row, piece) => {
 
   if (isChessPiece(clickedCell.piece.cellContent)) {
     const availablePieceActionList = buildAvailablePieceActionList(
-      boardMatrix.value,
+      board.matrix,
       clickedCell
     );
-    updateBoardMatrix(
-      boardMatrix.value,
-      availablePieceActionList,
-      currentPlayer.value
-    );
+    board.updateBoardMatrix(availablePieceActionList);
   } else if (
     clickedCell.piece.cellContent === CELL_CONTENT.MOVE ||
     clickedCell.piece.cellContent === CELL_CONTENT.TAKE
   ) {
-    moveHistoryList.value.push({
-      turn: turn,
-      player: currentPlayer,
-      moveName: buildMoveName(boardMatrix, clickedCell, lastClickedCell),
-    });
-    boardMatrix.value[lastClickedCell.column][lastClickedCell.row] = null;
-    boardMatrix.value[column][row] = lastClickedCell.piece;
-    cleanMoveAction(boardMatrix.value);
+    board.addMoveHistory(clickedCell, lastClickedCell);
+    board.matrix[lastClickedCell.column][lastClickedCell.row] = null;
+    board.matrix[column][row] = lastClickedCell.piece;
+    cleanMoveAction(board.matrix);
     switchPlayer();
   }
 
@@ -71,30 +51,26 @@ const userAction = (column, row, piece) => {
 };
 
 const switchPlayer = () => {
-  if (currentPlayer.value === 1) currentPlayer.value = 2;
-  else if (currentPlayer.value === 2) {
-    currentPlayer.value = 1;
-    turn = turn + 1;
-  }
+  currentPlayer.switchPlayer();
 };
 </script>
 
 <template>
-  <div class="game">
-    <table class="board">
-      <tr v-for="row in rowList" class="row" :key="row">
-        <td v-for="column in columnList" class="cell" :key="column">
-          <BoardCell
-            :column="column"
-            :row="row"
-            :piece="boardMatrix[column][row]"
-            :currentPlayer="currentPlayer"
-            v-on:userAction="userAction"
-          />
-        </td>
-      </tr>
-    </table>
-    <MoveHistory :moveHistoryList="moveHistoryList" />
+  <div>
+    <div class="game">
+      <table class="board">
+        <tr v-for="row in rowList" class="row" :key="row">
+          <td v-for="column in columnList" class="cell" :key="column">
+            <BoardCell
+              :column="column"
+              :row="row"
+              v-on:userAction="userAction"
+            />
+          </td>
+        </tr>
+      </table>
+    </div>
+    <MoveHistory />
   </div>
   <ResetButton v-on:userReset="resetBoard" />
 </template>

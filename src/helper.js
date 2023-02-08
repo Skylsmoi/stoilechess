@@ -304,23 +304,14 @@ export const moveRow = (startRow, direction, distance) => {
 };
 
 export const moveColumn = (startColumn, direction, distance) => {
-  if (direction === MOVE_DIRECTION.LEFT)
+  if (direction === MOVE_DIRECTION.LEFT) {
+    if (startColumn === "a") return columnList[0];
     return columnList[columnList.indexOf(startColumn) - distance];
-  if (direction === MOVE_DIRECTION.RIGHT)
+  }
+  if (direction === MOVE_DIRECTION.RIGHT) {
+    if (startColumn === "h") return columnList[7];
     return columnList[columnList.indexOf(startColumn) + distance];
-};
-
-export const updateBoardMatrix = (boardMatrix, actionList, player) => {
-  actionList.forEach((action) => {
-    boardMatrix[action.column][action.row] = {
-      player: player,
-      savedCellContent:
-        action.actionType === ACTION_TYPE.TAKE
-          ? boardMatrix[action.column][action.row].cellContent
-          : undefined,
-      cellContent: action.actionType,
-    };
-  });
+  }
 };
 
 export const isChessPiece = (cellContent) => {

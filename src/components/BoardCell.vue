@@ -1,17 +1,24 @@
 <script setup>
-import { defineEmits } from "vue";
+import { defineEmits, computed } from "vue";
 
 import PieceItem from "./PieceItem.vue";
+
+import { useCurrentPlayerStore } from "../store/currentPlayer.js";
+import { useBoardStore } from "../store/board.js";
+
 const props = defineProps({
   column: String,
   row: Number,
-  piece: Object,
-  currentPlayer: Number,
 });
+
+const currentPlayer = useCurrentPlayerStore();
+const board = useBoardStore();
+
+const piece = computed(() => board.matrix[props.column][props.row]);
 
 const emit = defineEmits(["userAction"]);
 const userAction = () => {
-  emit("userAction", props.column, props.row, props.piece);
+  emit("userAction", props.column, props.row, piece.value);
 };
 </script>
 
@@ -19,14 +26,13 @@ const userAction = () => {
   <div
     class="boardCell"
     v-on:click="
-      (e) =>
-        props?.currentPlayer === props.piece.player ? userAction(e) : null
+      (e) => (currentPlayer.id === piece.player ? userAction(e) : null)
     "
   >
     <PieceItem
-      v-if="props.piece !== null"
-      :player="props.piece.player"
-      :cellContent="props.piece.cellContent"
+      v-if="piece !== null"
+      :player="piece.player"
+      :cellContent="piece.cellContent"
     />
     <div v-if="props.column === 'a'" class="cellName row">{{ row }}</div>
     <div v-if="props.row === 1" class="cellName column">{{ column }}</div>
