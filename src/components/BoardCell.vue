@@ -17,18 +17,17 @@ const board = useBoardStore();
 const piece = computed(() => board.matrix[props.column][props.row]);
 
 const emit = defineEmits(["userAction"]);
-const userAction = () => {
-  emit("userAction", props.column, props.row, piece.value);
-};
+// const userAction = () => {
+//   emit("userAction", props.column, props.row, piece.value);
+// };
 </script>
 
 <template>
   <div
     class="boardCell"
-    v-on:click="
-      (e) => (currentPlayer.id === piece.player ? userAction(e) : null)
-    "
+    v-on:click="(e) => emit('userAction', props.column, props.row, piece)"
   >
+    <!-- (e) => (currentPlayer.id === piece?.player ? userAction(e) : null) -->
     <PieceItem
       v-if="piece !== null"
       :player="piece.player"

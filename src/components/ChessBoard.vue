@@ -1,11 +1,13 @@
 <script setup>
-import { ref } from "vue";
 import BoardCell from "./BoardCell.vue";
+import PlayerToPlay from "./PlayerToPlay.vue";
 import MoveHistory from "./MoveHistory.vue";
 import ResetButton from "./ResetButton.vue";
 
 import { useCurrentPlayerStore } from "../store/currentPlayer.js";
 import { useBoardStore } from "../store/board.js";
+
+import { useRoute } from "vue-router";
 
 import {
   columnList,
@@ -21,16 +23,25 @@ const currentPlayer = useCurrentPlayerStore();
 
 let lastClickedCell = null;
 
+const route = useRoute();
+
 const resetBoard = () => {
   board.resetBoard();
-  currentPlayer.resetPlayer();
+  currentPlayer.resetPlayer(route.params.playerColor);
 };
 resetBoard();
 
-const userAction = (column, row, piece) => {
-  const clickedCell = { column, row, piece };
+const userAction = (clickedCell = { column, row, piece }) => {
+  if (
+    clickedCell.piece !== null &&
+    clickedCell.piece.player !== currentPlayer.id
+  ) {
+    return;
+  }
 
-  if (isChessPiece(clickedCell.piece.cellContent)) {
+  if (clickedCell.piece === null) {
+    cleanMoveAction(board.matrix);
+  } else if (isChessPiece(clickedCell.piece.cellContent)) {
     const availablePieceActionList = buildAvailablePieceActionList(
       board.matrix,
       clickedCell
@@ -56,7 +67,7 @@ const switchPlayer = () => {
 </script>
 
 <template>
-  <div>
+  <div class="container">
     <div class="game">
       <table class="board">
         <tr v-for="row in rowList" class="row" :key="row">
@@ -70,12 +81,23 @@ const switchPlayer = () => {
         </tr>
       </table>
     </div>
-    <MoveHistory />
+    <div class="gameInfo">
+      <PlayerToPlay />
+      <MoveHistory />
+    </div>
   </div>
   <ResetButton v-on:userReset="resetBoard" />
 </template>
 
 <style scoped>
+.container {
+  display: flex;
+  flex-direction: row;
+}
+.gameInfo {
+  width: 200px;
+  padding: 10px 15px;
+}
 .game {
   width: 500px;
   display: flex;

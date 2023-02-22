@@ -1,9 +1,11 @@
-<script setup>
-import Board from "./components/ChessBoard.vue";
-</script>
+<script setup></script>
 
 <template>
-  <Board />
+  <div id="nav">
+    <router-link to="/">Home</router-link> |
+    <router-link to="/game">Game</router-link>
+  </div>
+  <router-view />
 </template>
 
 <style scoped></style>

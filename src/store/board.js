@@ -45,11 +45,20 @@ export const useBoardStore = defineStore("board", () => {
   };
 
   const addMoveHistory = (clickedCell, lastClickedCell) => {
-    moveHistoryList.value.push({
-      turn: turn,
-      player: currentPlayer.id,
-      moveName: buildMoveName(matrix.value, clickedCell, lastClickedCell),
-    });
+    moveHistoryList.value = [
+      ...moveHistoryList.value,
+      {
+        turn: turn.value,
+        player: currentPlayer.id,
+        moveName: buildMoveName(matrix.value, clickedCell, lastClickedCell),
+      },
+    ];
+    // INFO - CH - 20230209 - alternative implementation
+    // moveHistoryList.value.push({
+    //   turn: turn,
+    //   player: currentPlayer.id,
+    //   moveName: buildMoveName(matrix.value, clickedCell, lastClickedCell),
+    // });
   };
 
   const addTurn = () => {

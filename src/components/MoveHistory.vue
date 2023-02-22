@@ -12,7 +12,7 @@ const computedMoveList = computed(() => {
 });
 </script>
 <template>
-  <div>
+  <div class="moveHistory">
     <span v-for="move in computedMoveList">
       <span v-if="move.turn !== null" class="turn">{{ move.turn }}. </span>
       {{ move.moveName }}
@@ -20,6 +20,8 @@ const computedMoveList = computed(() => {
   </div>
 </template>
 <style scoped>
+.moveHistory {
+}
 .turn {
   margin-left: 5px;
 }

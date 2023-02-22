@@ -3,14 +3,20 @@ import { defineStore } from "pinia";
 import { useBoardStore } from "./board.js";
 
 export const PLAYER_COLOR = {
-  WHITE: "white",
-  BLACK: "black",
+  WHITE: {
+    id: 1,
+    label: "white",
+  },
+  BLACK: {
+    id: 2,
+    label: "black",
+  },
 };
 
 export const useCurrentPlayerStore = defineStore("currentPlayer", () => {
   const id = ref(1);
   const color = computed(() =>
-    id.value === 1 ? PLAYER_COLOR.WHITE : PLAYER_COLOR.BLACK
+    id.value === 1 ? PLAYER_COLOR.WHITE.id : PLAYER_COLOR.BLACK.id
   );
 
   const board = useBoardStore();
@@ -32,8 +38,16 @@ export const useCurrentPlayerStore = defineStore("currentPlayer", () => {
     id.value = newId;
   };
 
-  const resetPlayer = () => {
-    forcePlayerId(1);
+  const resetPlayer = (playerColor) => {
+    if (!playerColor) {
+      forcePlayerId(PLAYER_COLOR.WHITE.id);
+      return;
+    }
+    const newColor =
+      PLAYER_COLOR.WHITE.label === playerColor
+        ? PLAYER_COLOR.WHITE.id
+        : PLAYER_COLOR.BLACK.id;
+    forcePlayerId(newColor);
   };
 
   return {
