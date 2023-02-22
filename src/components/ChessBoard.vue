@@ -1,4 +1,5 @@
 <script setup>
+import { onMounted, watch } from "vue";
 import BoardCell from "./BoardCell.vue";
 import PlayerToPlay from "./PlayerToPlay.vue";
 import MoveHistory from "./MoveHistory.vue";
@@ -18,20 +19,20 @@ import {
 } from "../helper.js";
 import { buildAvailablePieceActionList } from "../previewMove.js";
 
+const route = useRoute();
 const board = useBoardStore();
 const currentPlayer = useCurrentPlayerStore();
-
-let lastClickedCell = null;
-
-const route = useRoute();
 
 const resetBoard = () => {
   board.resetBoard();
   currentPlayer.resetPlayer(route.params.playerColor);
 };
-resetBoard();
+onMounted(() => resetBoard());
+watch(() => route.params.playerColor, resetBoard);
 
-const userAction = (clickedCell = { column, row, piece }) => {
+let lastClickedCell = null;
+const userAction = (column, row, piece) => {
+  const clickedCell = { column, row, piece };
   if (
     clickedCell.piece !== null &&
     clickedCell.piece.player !== currentPlayer.id
@@ -53,7 +54,7 @@ const userAction = (clickedCell = { column, row, piece }) => {
   ) {
     board.addMoveHistory(clickedCell, lastClickedCell);
     board.matrix[lastClickedCell.column][lastClickedCell.row] = null;
-    board.matrix[column][row] = lastClickedCell.piece;
+    board.matrix[clickedCell.column][clickedCell.row] = lastClickedCell.piece;
     cleanMoveAction(board.matrix);
     switchPlayer();
   }
@@ -93,6 +94,7 @@ const switchPlayer = () => {
 .container {
   display: flex;
   flex-direction: row;
+  margin-top: 25px;
 }
 .gameInfo {
   width: 200px;

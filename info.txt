@@ -1,3 +1,5 @@
 todo
 - turn board
 x vue router
+- loader in LoginForm.vue
+- fix first page load on /game/white redirect to home

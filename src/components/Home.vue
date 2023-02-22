@@ -1,8 +1,18 @@
-<script setup></script>
 <template>
   <h1>Home page</h1>
-  <div>
-    <router-link to="/game/white">Start as White</router-link>
-    <router-link to="/game/black">Start as Black</router-link>
+  <LoginForm v-if="user.isLoggedIn === false" />
+  <div v-else>
+    Hi {{ user.username }}
+    <br />
+    <ui-button type="text" outlined @click="logOut">Log out</ui-button>
   </div>
 </template>
+
+<script setup>
+import LoginForm from "./LoginForm.vue";
+import { useUserStore } from "../store/user.js";
+const user = useUserStore();
+const logOut = () => {
+  user.logOut();
+};
+</script>

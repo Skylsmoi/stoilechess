@@ -1,11 +1,10 @@
-<script setup></script>
-
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/game">Game</router-link>
-  </div>
+  <Menu />
   <router-view />
 </template>
+
+<script setup>
+import Menu from "./components/Menu.vue";
+</script>
 
 <style scoped></style>
